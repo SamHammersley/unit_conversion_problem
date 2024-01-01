@@ -16,10 +16,12 @@ fn main() {
     let queries: Vec<Query> = vec![(2.0, "m", "in"), (13.0, "in", "m"), (13.0, "in", "ft")];
 
     let unit_graph = build_unit_graph(&facts);
-    let query = &queries[0];
-
-    if let Some(conversion) = unit_graph.query(query) {
-        println!("{0}{1} in {2} = {conversion}", query.0, query.1, query.2);
+    for query in &queries {
+        if let Some(conversion) = unit_graph.query(query) {
+            println!("{0}{1} in {2} = {conversion}", query.0, query.1, query.2);
+        } else {
+            println!("No way to conver from {0} to {1}", query.1, query.2);
+        }
     }
 }
 
