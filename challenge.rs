@@ -8,15 +8,18 @@ fn main() {
     let facts: Vec<Fact> = vec![
         ("m", 3.28, "ft"),
         ("ft", 12.0, "in"),
-        ("in", 0.0277778, "yard")
-        //("hr", 60.0, "min"),
-        //("min", 60.0, "sec"),
+        ("in", 0.0277778, "yard"),
+        ("hr", 60.0, "min"),
+        ("min", 60.0, "sec"),
     ];
 
     let queries: Vec<Query> = vec![
         (2.0, "m", "in"),
         (13.0, "in", "m"),
         (13.0, "in", "ft"),
+        (5.5, "yard", "m"),
+        (69.0, "in", "hr"),
+        (3600.0, "sec", "hr")
     ];
     let unit_graph = build_unit_graph(&facts);
 
