@@ -13,14 +13,18 @@ fn main() {
         //("min", 60.0, "sec"),
     ];
 
-    let queries: Vec<Query> = vec![(2.0, "m", "in"), (13.0, "in", "m"), (13.0, "in", "ft")];
-
+    let queries: Vec<Query> = vec![
+        (2.0, "m", "in"),
+        (13.0, "in", "m"),
+        (13.0, "in", "ft"),
+    ];
     let unit_graph = build_unit_graph(&facts);
+
     for query in &queries {
         if let Some(conversion) = unit_graph.query(query) {
             println!("{0}{1} in {2} = {conversion}", query.0, query.1, query.2);
         } else {
-            println!("No way to conver from {0} to {1}", query.1, query.2);
+            println!("No way to convert from {0} to {1}", query.1, query.2);
         }
     }
 }
@@ -30,7 +34,11 @@ struct Graph {
 }
 
 impl Graph {
-    fn dfs(&self, start_node_key: &'static str, search_node_key: &'static str) -> Option<VecDeque<&GraphNode>> {
+    fn dfs(
+        &self,
+        start_node_key: &'static str,
+        search_node_key: &'static str,
+    ) -> Option<VecDeque<&GraphNode>> {
         let mut stack = Vec::<&GraphNode>::new();
         let mut path = VecDeque::<&GraphNode>::new();
         let mut parent_keys = HashMap::<&str, &str>::new();
@@ -89,8 +97,7 @@ struct GraphNode {
     neighbour_node_keys: HashMap<&'static str, Box<dyn Fn(f32) -> f32>>
 }
 
-impl Eq for GraphNode {
-}
+impl Eq for GraphNode {}
 
 impl PartialEq for GraphNode {
     fn eq(&self, other: &Self) -> bool {
@@ -101,7 +108,10 @@ impl PartialEq for GraphNode {
 impl Hash for GraphNode {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.unit.hash(state);
-        self.neighbour_node_keys.keys().collect::<Vec<_>>().hash(state);
+        self.neighbour_node_keys
+            .keys()
+            .collect::<Vec<_>>()
+            .hash(state);
     }
 }
 
@@ -115,15 +125,19 @@ fn build_unit_graph(facts: &Vec<Fact>) -> Graph {
 
         let from_node = nodes.entry(from_unit).or_insert(GraphNode {
             unit: from_unit,
-            neighbour_node_keys: HashMap::new()
+            neighbour_node_keys: HashMap::new(),
         });
-        from_node.neighbour_node_keys.insert(to_unit, Box::new(move |value| value * factor));
+        from_node
+            .neighbour_node_keys
+            .insert(to_unit, Box::new(move |value| value * factor));
 
         let to_node = nodes.entry(to_unit).or_insert(GraphNode {
             unit: to_unit,
-            neighbour_node_keys: HashMap::new()
+            neighbour_node_keys: HashMap::new(),
         });
-        to_node.neighbour_node_keys.insert(from_unit, Box::new(move |value| value / factor));
+        to_node
+            .neighbour_node_keys
+            .insert(from_unit, Box::new(move |value| value / factor));
     }
 
     Graph { graph: nodes }
